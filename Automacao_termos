@@ -1,0 +1,38 @@
+Sub createTermo()
+
+topath = ""    'ADD a path to save the word file'
+Set objWord = CreateObject("Word.Application")
+objWord.Visible = True
+lastLine = Cells(Rows.Count, 1).End(xlUp).Row
+
+For lintab = 2 To lastLine
+
+    If Cells(lintab, 18).Value <> "OK" Then
+    Set arqTermo = objWord.documents.Open(ThisWorkbook.Path & "\Termo de Responsabilidade Notebook.docx")
+    Set contentDoc = arqTermo.Application.Selection
+    Set ws = ThisWorkbook.Sheets("Termos")
+    
+    For colTab = 1 To 18
+        
+        With contentDoc.Find
+        contentDoc.Find.Text = Cells(1, colTab).Value
+        contentDoc.Find.Replacement.Text = Cells(lintab, colTab).Value
+        contentDoc.Find.Execute Replace:=wdReplaceAll
+        End With
+        
+    Next colTab
+    
+    arqTermo.SaveAs2 (topath & "Termo de Resposabilidade - " & Cells(lintab, 1).Value & ".docx ")
+    arqTermo.Close
+    ws.Cells(lintab, 18).Value = "OK"
+    End If
+Next lintab
+
+objWord.Quit
+
+Set objWord = Nothing
+Set contentDoc = Nothing
+Set arqTermo = Nothing
+
+
+End Sub
